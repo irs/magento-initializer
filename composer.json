@@ -1,0 +1,26 @@
+{
+    "name":         "irs/magento-initializer",
+    "description":  "Framework for Magento initialization and state recovery",
+    "keywords":     ["magento", "state", "initializtion"],
+    "type":         "library",
+    "license":      "MIT",
+
+    "authors": [
+        {
+            "name":   "Vadim Kusakin",
+            "email":  "vadim.irbis@gmail.com"
+        }
+    ],
+    
+    "require": {
+        "php":              ">=5.3",
+        "symfony/console":  ">=2.0,<2.3-dev",
+        "symfony/yaml":     ">=2.2,<2.3-dev"
+    },
+    
+    "bin": ["bin/magento"],
+    
+    "autoload": {
+        "psr-0": {"Irs\\MagentoInitializer": "src/"}
+    }
+}

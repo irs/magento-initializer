@@ -70,7 +70,11 @@ abstract class Fso
         }
 
         unset($iterator);
-        rmdir($filename);
+        if (is_link($filename) && !self::_isOsWindowsNt()) {
+            unlink($filename);
+        } else {
+            rmdir($filename);
+    	}
     }
 
     protected static function _isOsSupportsLinks()

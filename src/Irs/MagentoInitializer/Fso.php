@@ -60,6 +60,7 @@ abstract class Fso
         foreach ($iterator as $item) {
             if ($item->isDir()) {
             	if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
+            	    echo $item . PHP_EOL;
                     rmdir((string)$item);
             	}
             } else {

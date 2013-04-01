@@ -58,13 +58,13 @@ abstract class Fso
         );
 
         foreach ($iterator as $item) {
-            if ($item->isDir()) {
+            if ($item->isLink() || !$item->isDir()) {
+                unlink((string)$item);
+            } else {
             	if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
             	    echo $item . PHP_EOL; var_dump($item->isLink());
                     rmdir((string)$item);
             	}
-            } else {
-                unlink((string)$item);
             }
         }
 

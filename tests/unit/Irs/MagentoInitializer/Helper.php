@@ -31,8 +31,10 @@ abstract class Helper extends \PHPUnit_Framework_Assert
                     self::delete($path . DIRECTORY_SEPARATOR . $readdirectory);
                 }
                 $directory->close();
+                rmdir($path);
+            } else {
+                unlink($path);
             }
-            rmdir($path);
         } else if (is_file($path)) {
             unlink($path);
         } else {

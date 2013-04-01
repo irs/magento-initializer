@@ -24,7 +24,7 @@ class GenericInitializer implements InitializerInterface
 
     public function __construct($magentoRootDir, $storeCode = '', $scopeCode = 'store')
     {
-        $magentoRootDir = trim($magentoRootDir, '\/');
+        $magentoRootDir = rtrim($magentoRootDir, '\/');
         $this->_paramsPathname = $magentoRootDir . DIRECTORY_SEPARATOR . MagentoInstaller::PARAMS_FILENAME;
         $this->_magentoRoot = $magentoRootDir;
         $this->_scope = $scopeCode;

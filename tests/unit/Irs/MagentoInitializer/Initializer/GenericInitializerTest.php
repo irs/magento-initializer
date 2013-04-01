@@ -54,7 +54,7 @@ class GenericInitializerTest extends \PHPUnit_Framework_TestCase
     {
         $installer = new MagentoInstallerWithMockedRun($this->_target, $this->_magento, 'host', 'user', 'pwd', 'name');
         $installer->install();
-        `dir $this->_target`;
+        var_dump($this->_target, `ls $this->_target`);
     }
 
     public function testShouldImplementInitializerInterface()

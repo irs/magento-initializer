@@ -1,7 +1,7 @@
 {
     "name":         "irs/magento-initializer",
     "description":  "Framework for Magento initialization and state recovery",
-    "keywords":     ["magento", "state", "initializtion"],
+    "keywords":     ["magento", "state", "initialization"],
     "type":         "library",
     "license":      "MIT",
 
@@ -16,6 +16,10 @@
         "php":              ">=5.3",
         "symfony/console":  ">=2.0,<2.3-dev",
         "symfony/yaml":     ">=2.2,<2.3-dev"
+    },
+        
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
     },
     
     "bin": ["bin/magento"],

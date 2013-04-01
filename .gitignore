@@ -1,11 +1,6 @@
 
-/functional/local.yml
-/build.php
-/functional/sut
-/docs/API Documentation
 /.buildpath
 /.project
 /.settings
 /vendor
-/states
-/behat.yml
+/composer.lock

@@ -58,13 +58,14 @@ abstract class Fso
         );
 
         foreach ($iterator as $item) {
-            if ($item->isLink() || !$item->isDir()) {
-                unlink((string)$item);
-            } else {
-            	if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
-            	    echo $item . PHP_EOL; var_dump($item->isLink());
+            if ($item->isDir()) {
+                if ($item->isLink() && !self::_isOsWindowsNt()) {
+                    unlink((string)$item);
+                } else if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
                     rmdir((string)$item);
             	}
+            } else {
+                unlink((string)$item);
             }
         }
 
@@ -74,8 +75,13 @@ abstract class Fso
 
     protected static function _isOsSupportsLinks()
     {
-        return (php_uname('s') == 'Windows NT')
+        return self::_isOsWindowsNt()
             ? version_compare(php_uname('r'), '6.0', '>=')
             : true;
+    }
+
+    protected static function _isOsWindowsNt()
+    {
+        return php_uname('s') == 'Windows NT';
     }
 }

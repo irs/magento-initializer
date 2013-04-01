@@ -14,7 +14,7 @@ abstract class Helper extends \PHPUnit_Framework_Assert
     public static function createTempDir()
     {
         $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::_getRandomName();
-        var_dump(path, mkdir($path));
+        var_dump($path, mkdir($path));
 
         return $path;
     }

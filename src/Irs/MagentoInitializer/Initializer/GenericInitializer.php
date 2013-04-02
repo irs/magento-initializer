@@ -9,7 +9,7 @@
 
 namespace Irs\MagentoInitializer\Initializer;
 
-use Irs\MagentoInitializer\Fso;
+use Irs\Fso\Fso;
 use Irs\MagentoInitializer\Initializer\Db\Mysql as MysqlDbInitializer;
 use Irs\MagentoInitializer\State\GenericState as MagentoState;
 use Irs\MagentoInitializer\Installer\GenericInstaller as MagentoInstaller;

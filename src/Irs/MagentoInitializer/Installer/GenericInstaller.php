@@ -9,7 +9,7 @@
 
 namespace Irs\MagentoInitializer\Installer;
 
-use Irs\MagentoInitializer\Fso;
+use Irs\Fso\Fso;
 
 class GenericInstaller implements InstallerInterface
 {

@@ -9,6 +9,8 @@
 
 namespace Irs\MagentoInitializer\Initializer;
 
+require_once __DIR__ . '/../Helper.php';
+
 use Irs\MagentoInitializer\State\GenericState as MagentoState;
 use Irs\MagentoInitializer\Installer\GenericInstaller as MagentoInstaller;
 use Irs\MagentoInitializer\Initializer\GenericInitializer as MagentoInitializer;

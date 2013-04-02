@@ -58,10 +58,13 @@ abstract class Fso
         );
 
         foreach ($iterator as $item) {
+            if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
+                continue;
+            }
             if ($item->isDir()) {
                 if ($item->isLink() && !self::_isOsWindowsNt()) {
                     unlink((string)$item);
-                } else if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
+                } else {
                     rmdir((string)$item);
             	}
             } else {

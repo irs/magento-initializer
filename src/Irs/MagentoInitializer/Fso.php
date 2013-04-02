@@ -14,7 +14,7 @@ abstract class Fso
     public static function copy($from, $to, $deep = true)
     {
         if ($deep || !self::_isOsSupportsLinks()) {
-                self::_copy($from, $to);
+            self::_copy($from, $to);
         } else {
             symlink($from, $to);
         }

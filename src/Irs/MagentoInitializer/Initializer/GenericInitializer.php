@@ -16,44 +16,44 @@ use Irs\MagentoInitializer\Installer\GenericInstaller as MagentoInstaller;
 
 class GenericInitializer implements InitializerInterface
 {
-    private $_magentoRoot;
-    private $_paramsPathname;
-    private $_store;
-    private $_scope;
-    private $_connectionTypeToDb = array();
+    private $magentoRoot;
+    private $paramsPathname;
+    private $store;
+    private $scope;
+    private $connectionTypeToDb = array();
 
     public function __construct($magentoRootDir, $storeCode = '', $scopeCode = 'store')
     {
         $magentoRootDir = rtrim($magentoRootDir, '\/');
-        $this->_paramsPathname = $magentoRootDir . DIRECTORY_SEPARATOR . MagentoInstaller::PARAMS_FILENAME;
-        $this->_magentoRoot = $magentoRootDir;
-        $this->_scope = $scopeCode;
-        $this->_store = $storeCode;
+        $this->paramsPathname = $magentoRootDir . DIRECTORY_SEPARATOR . MagentoInstaller::PARAMS_FILENAME;
+        $this->magentoRoot = $magentoRootDir;
+        $this->scope = $scopeCode;
+        $this->store = $storeCode;
     }
 
     public function initialize()
     {
-        if (!file_exists($this->_paramsPathname)) {
-            throw new \InvalidArgumentException("Invalid Magento root '$this->_magentoRoot'.");
+        if (!file_exists($this->paramsPathname)) {
+            throw new \InvalidArgumentException("Invalid Magento root '$this->magentoRoot'.");
         }
 
-        $params = $this->_getParams();
-        $params['code'] = $this->_store;
-        $params['type'] = $this->_scope;
-        $this->_saveParams($params);
+        $params = $this->getParams();
+        $params['code'] = $this->store;
+        $params['type'] = $this->scope;
+        $this->saveParams($params);
     }
 
     /**
      * @return array
      */
-    protected function _getParams()
+    protected function getParams()
     {
-        if (!file_exists($this->_paramsPathname)) {
+        if (!file_exists($this->paramsPathname)) {
             throw new \InvalidArgumentException('System under test is not initialized; run behat first.');
         }
 
         try {
-            $params = include $this->_paramsPathname;
+            $params = include $this->paramsPathname;
         } catch (\RuntimeException $e) {
             throw new \InvalidArgumentException(
                 'Inconsistent state of system under tests; cleaunp sut folder, database and run behat again.', 0, $e
@@ -68,15 +68,15 @@ class GenericInitializer implements InitializerInterface
             !isset($params['options']['var_dir']) ||
             !isset($params['options']['media_dir'])) {
 
-            throw new \InvalidArgumentException("Inconsistent params file ({$this->_paramsPathname}).");
+            throw new \InvalidArgumentException("Inconsistent params file ({$this->paramsPathname}).");
         }
 
         return $params;
     }
 
-    protected function _saveParams(array $params)
+    protected function saveParams(array $params)
     {
-        file_put_contents($this->_paramsPathname, '<?php return ' . var_export($params, true) . ';');
+        file_put_contents($this->paramsPathname, '<?php return ' . var_export($params, true) . ';');
     }
 
     public function saveState($fileName)
@@ -84,10 +84,10 @@ class GenericInitializer implements InitializerInterface
         $state = new MagentoState($fileName);
 
         $dumpFileName = tempnam(null, 'btd');
-        $this->_getDb()->createDump($dumpFileName);
+        $this->getDb()->createDump($dumpFileName);
         $state->setDump($dumpFileName);
 
-        $params = $this->_getParams();
+        $params = $this->getParams();
         if (is_dir($params['options']['var_dir'])) {
             $state->setVar($params['options']['var_dir']);
         }
@@ -104,39 +104,39 @@ class GenericInitializer implements InitializerInterface
     public function restoreState($stateFileName)
     {
     	$state = new MagentoState($stateFileName);
-        $tempDir = $this->_createTempDir();
+        $tempDir = $this->createTempDir();
 
         // restore dump
         $dumpFile = $tempDir . DIRECTORY_SEPARATOR . 'dump';
         $state->extractDump($tempDir);
-        $this->_getDb()->restoreDump($tempDir . DIRECTORY_SEPARATOR . 'dump');
+        $this->getDb()->restoreDump($tempDir . DIRECTORY_SEPARATOR . 'dump');
 
         // restore var and media
-        $params = $this->_getParams();
-        file_exists($params['options']['var_dir']) && $this->_delete($params['options']['var_dir']);
-        file_exists($params['options']['media_dir']) && $this->_delete($params['options']['media_dir']);
+        $params = $this->getParams();
+        file_exists($params['options']['var_dir']) && $this->delete($params['options']['var_dir']);
+        file_exists($params['options']['media_dir']) && $this->delete($params['options']['media_dir']);
         $state->extractVar($tempDir);
         $state->extractMedia($tempDir);
         Fso::move($tempDir . DIRECTORY_SEPARATOR . 'var', $params['options']['var_dir']);
         Fso::move($tempDir . DIRECTORY_SEPARATOR . 'media', $params['options']['media_dir']);
 
-        $this->_delete($tempDir);
+        $this->delete($tempDir);
     }
 
-    protected function _createTempDir()
+    protected function createTempDir()
     {
-        $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_getRandomName();
+        $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->getRandomName();
         mkdir($path);
 
         return $path;
     }
 
-    protected function _delete($path)
+    protected function delete($path)
     {
         Fso::delete($path);
     }
 
-    private function _getRandomName()
+    private function getRandomName()
     {
         $chars = '0123456789ABCDEF';
         $name = 'btd';
@@ -153,11 +153,11 @@ class GenericInitializer implements InitializerInterface
      * @return \Btf\Bootstrap\Initializer\Db\DbInterface
      * @throws InvalidArgumentException
      */
-    protected function _getDb()
+    protected function getDb()
     {
-        $type = $this->_getConfig()->global->resources->default_setup->connection->type;
+        $type = $this->getConfig()->global->resources->default_setup->connection->type;
 
-        return $this->_getDbByConnectionType($type);
+        return $this->getDbByConnectionType($type);
     }
 
     /**
@@ -166,30 +166,30 @@ class GenericInitializer implements InitializerInterface
      * @return \Btf\Bootstrap\Initializer\Db\DbInterface
      * @throws InvalidArgumentException
      */
-    protected function _getDbByConnectionType($type)
+    protected function getDbByConnectionType($type)
     {
         $type = (string)$type;
-        if (!isset($this->_connectionTypeToDb[$type])) {
+        if (!isset($this->connectionTypeToDb[$type])) {
             switch ($type) {
                 case 'pdo_mysql':
-                    $db = $this->_getMysqlDbInitializer();
+                    $db = $this->getMysqlDbInitializer();
                     break;
 
                 default:
                     throw new \InvalidArgumentException("DB '$type' is not supported.");
             }
-           $this->_connectionTypeToDb[$type] = $db;
+            $this->connectionTypeToDb[$type] = $db;
         }
 
-        return $this->_connectionTypeToDb[$type];
+        return $this->connectionTypeToDb[$type];
     }
 
     /**
      * @return \Btf\Bootstrap\Initializer\Db\Mysql
      */
-    protected function _getMysqlDbInitializer()
+    protected function getMysqlDbInitializer()
     {
-        $config = $this->_getConfig()->global->resources->default_setup->connection;
+        $config = $this->getConfig()->global->resources->default_setup->connection;
 
         return new MysqlDbInitializer($config->host, $config->username, $config->password, $config->dbname);
     }
@@ -198,9 +198,9 @@ class GenericInitializer implements InitializerInterface
      * @return \SimpleXMLElement
      * @throws \RuntimeException
      */
-    protected function _getConfig()
+    protected function getConfig()
     {
-        $params = $this->_getParams();
+        $params = $this->getParams();
         $configPath = $params['options']['etc_dir'] . DIRECTORY_SEPARATOR . 'local.xml';
         if (!file_exists($configPath)) {
             throw new \RuntimeException("Magento instance is inconsistent; unable to read config ({$params['options']['etc_dir']}).");

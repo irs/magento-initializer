@@ -262,7 +262,7 @@ class InitializerWithMockedDb extends MagentoInitializer
         $this->_db = $db;
     }
 
-    protected function _getDbByConnectionType($type)
+    protected function getDbByConnectionType($type)
     {
         return $this->_db;
     }
@@ -270,6 +270,6 @@ class InitializerWithMockedDb extends MagentoInitializer
 
 class MagentoInstallerWithMockedRun extends MagentoInstaller
 {
-    protected function _installMagento($code, $type, array $options)
+    protected function installMagento($code, $type, array $options)
     {}
 }

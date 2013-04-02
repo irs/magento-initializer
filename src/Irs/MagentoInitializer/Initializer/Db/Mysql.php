@@ -11,19 +11,19 @@ namespace Irs\MagentoInitializer\Initializer\Db;
 
 class Mysql implements DbInterface
 {
-    private $_hostName;
-    private $_port;
-    private $_userName;
-    private $_password;
-    private $_schemaName;
+    private $hostName;
+    private $port;
+    private $userName;
+    private $password;
+    private $schemaName;
 
     public function __construct($hostName, $userName, $password, $schemaName, $port = 3306)
     {
-        $this->_hostName   = $hostName;
-        $this->_port       = $port;
-        $this->_userName   = $userName;
-        $this->_password   = $password;
-        $this->_schemaName = $schemaName;
+        $this->hostName   = $hostName;
+        $this->port       = $port;
+        $this->userName   = $userName;
+        $this->password   = $password;
+        $this->schemaName = $schemaName;
 
     }
 
@@ -34,7 +34,7 @@ class Mysql implements DbInterface
             throw new \InvalidArgumentException("Directory '$dir' is not writeable.");
         }
 
-        if (!$this->_isMysqldumpAvailable()) {
+        if (!$this->isMysqldumpAvailable()) {
             throw new \RuntimeException("Unable execute mysqldump; please check that it's in the path.");
         }
 
@@ -44,11 +44,11 @@ class Mysql implements DbInterface
                 array_map(
                 	'escapeshellarg',
                     array(
-                        $this->_schemaName,
-                        $this->_hostName,
-                        $this->_port,
-                        $this->_userName,
-                        $this->_password,
+                        $this->schemaName,
+                        $this->hostName,
+                        $this->port,
+                        $this->userName,
+                        $this->password,
                         $fileName,
                     )
                 )
@@ -70,7 +70,7 @@ class Mysql implements DbInterface
         if (!is_readable($fileName)) {
             throw new \InvalidArgumentException("File '$fileName' is not readable.");
         }
-        if (!$this->_isMysqlClientAvailable()) {
+        if (!$this->isMysqlClientAvailable()) {
             throw new \RuntimeException("Unable execute mysql; please check that it's in the path.");
         }
 
@@ -80,11 +80,11 @@ class Mysql implements DbInterface
                 array_map(
                 	'escapeshellarg',
                     array(
-                        $this->_hostName,
-                        $this->_port,
-                        $this->_schemaName,
-                        $this->_userName,
-                        $this->_password,
+                        $this->hostName,
+                        $this->port,
+                        $this->schemaName,
+                        $this->userName,
+                        $this->password,
                         $fileName,
                     )
                 )
@@ -98,14 +98,14 @@ class Mysql implements DbInterface
         }
     }
 
-    private function _isMysqldumpAvailable()
+    private function isMysqldumpAvailable()
     {
         exec('mysqldump --version', $output, $exitCode);
 
         return 0 == $exitCode;
     }
 
-    private function _isMysqlClientAvailable()
+    private function isMysqlClientAvailable()
     {
         exec('mysql --version', $output, $exitCode);
 

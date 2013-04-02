@@ -11,7 +11,7 @@ namespace Irs\MagentoInitializer\State;
 
 class GenericState implements StateInterface
 {
-    private $_archive;
+    private $archive;
 
     const MODE_CREATE = 1; // ZIPARCHIVE::CREATE
 
@@ -21,32 +21,32 @@ class GenericState implements StateInterface
 
     public function __construct($fileName)
     {
-        $this->_archive = new \ZipArchive();
+        $this->archive = new \ZipArchive();
         $newFile = !file_exists($fileName);
 
-        if (true !== $this->_archive->open($fileName, self::MODE_CREATE)) {
+        if (true !== $this->archive->open($fileName, self::MODE_CREATE)) {
             throw new \InvalidArgumentException('Cannot ' . ($newFile ? 'create' : 'open') . " '$fileName'.");
         }
 
         if (!$newFile) {
-            if (__CLASS__ != $this->_archive->comment) {
+            if (__CLASS__ != $this->archive->comment) {
                 throw new \InvalidArgumentException('Incorrect state file.');
             }
         } else {
-            $this->_archive->setArchiveComment(__CLASS__);
+            $this->archive->setArchiveComment(__CLASS__);
         }
     }
 
     public function save()
     {
-        $fileName = $this->_archive->filename;
-        if (true !== $this->_archive->close()) {
+        $fileName = $this->archive->filename;
+        if (true !== $this->archive->close()) {
             throw new \RuntimeException("Unable to save state.");
         }
 
-        $result =  $this->_archive->open($fileName, self::MODE_CREATE);
+        $result =  $this->archive->open($fileName, self::MODE_CREATE);
         if ($result !== true) {
-            $msg = $this->_getZipErrorMessageByCode($result);
+            $msg = $this->getZipErrorMessageByCode($result);
             throw new \RuntimeException('Unable to save state ' . ($msg ? "($msg)" : '') . '');
         }
 
@@ -55,16 +55,16 @@ class GenericState implements StateInterface
 
     public function setVar($path)
     {
-        $this->_delete(self::TYPE_VAR);
-        $this->_addDirectory(self::TYPE_VAR, $path);
+        $this->delete(self::TYPE_VAR);
+        $this->addDirectory(self::TYPE_VAR, $path);
 
         return $this;
     }
 
     public function setMedia($path)
     {
-        $this->_delete(self::TYPE_MEDIA);
-        $this->_addDirectory(self::TYPE_MEDIA, $path);
+        $this->delete(self::TYPE_MEDIA);
+        $this->addDirectory(self::TYPE_MEDIA, $path);
 
         return $this;
     }
@@ -77,36 +77,36 @@ class GenericState implements StateInterface
         if (!is_readable($path)) {
             throw new \InvalidArgumentException("Path should be readable.");
         }
-        $this->_delete(self::TYPE_DUMP);
-        $this->_archive->addFile($path, self::TYPE_DUMP);
+        $this->delete(self::TYPE_DUMP);
+        $this->archive->addFile($path, self::TYPE_DUMP);
 
         return $this;
     }
 
     public function extractDump($destination)
     {
-        $this->_extractByType(self::TYPE_DUMP, $destination);
+        $this->extractByType(self::TYPE_DUMP, $destination);
 
         return $this;
     }
 
     public function extractVar($destination)
     {
-        $this->_extractByType(self::TYPE_VAR, $destination);
+        $this->extractByType(self::TYPE_VAR, $destination);
 
         return $this;
     }
 
     public function extractMedia($destination)
     {
-        $this->_extractByType(self::TYPE_MEDIA, $destination);
+        $this->extractByType(self::TYPE_MEDIA, $destination);
 
         return $this;
     }
 
-    protected function _extractByType($type, $destination)
+    protected function extractByType($type, $destination)
     {
-        if (!$this->_isCorrectType($type)) {
+        if (!$this->isCorrectType($type)) {
             throw new \RuntimeException('Incorrect type.');
         }
         if (!is_dir($destination)) {
@@ -118,19 +118,19 @@ class GenericState implements StateInterface
 
         $entriesToExtract = array();
 
-        for ($i = 0; $i < $this->_archive->numFiles; $i++) {
-            $name = $this->_archive->getNameIndex($i);
+        for ($i = 0; $i < $this->archive->numFiles; $i++) {
+            $name = $this->archive->getNameIndex($i);
             if ($type == substr($name, 0, strlen($type))) {
                 $entriesToExtract[] = $name;
             }
         }
 
-        $this->_archive->extractTo($destination, $entriesToExtract);
+        $this->archive->extractTo($destination, $entriesToExtract);
     }
 
-    protected function _addDirectory($type, $path)
+    protected function addDirectory($type, $path)
     {
-        if (!$this->_isCorrectType($type)) {
+        if (!$this->isCorrectType($type)) {
             throw new \RuntimeException('Incorrect type.');
         }
         if (!is_dir($path)) {
@@ -149,31 +149,31 @@ class GenericState implements StateInterface
             }
             $localName = ltrim(substr($item->getPathname(), strlen($path)), '\\/');
             if ($item->isFile()) {
-                $this->_archive->addFile($item->getPathname(), $type . '/' . $localName);
+                $this->archive->addFile($item->getPathname(), $type . '/' . $localName);
             } else if ($item->isDir()) {
-                $this->_archive->addEmptyDir($type . '/'  . $localName);
+                $this->archive->addEmptyDir($type . '/'  . $localName);
             }
         }
     }
 
-    protected function _delete($type = null)
+    protected function delete($type = null)
     {
         if ($type !== null && !in_array($type, array(self::TYPE_DUMP, self::TYPE_MEDIA, self::TYPE_VAR))) {
             throw new \RuntimeException('Incorrect type.');
         }
-        for ($i = 0; $i < $this->_archive->numFiles; $i++) {
-            if ($type === null || $type == substr($this->_archive->getNameIndex($i), 0, strlen($type))) {
-                $this->_archive->deleteIndex($i);
+        for ($i = 0; $i < $this->archive->numFiles; $i++) {
+            if ($type === null || $type == substr($this->archive->getNameIndex($i), 0, strlen($type))) {
+                $this->archive->deleteIndex($i);
             }
         }
     }
 
-    protected function _isCorrectType($type)
+    protected function isCorrectType($type)
     {
         return in_array($type, array(self::TYPE_DUMP, self::TYPE_MEDIA, self::TYPE_VAR));
     }
 
-    protected function _getZipErrorMessageByCode($code)
+    protected function getZipErrorMessageByCode($code)
     {
         switch ($code) {
             // ZIPARCHIVE::ER_EXISTS

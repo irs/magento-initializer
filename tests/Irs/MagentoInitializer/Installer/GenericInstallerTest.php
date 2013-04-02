@@ -203,7 +203,7 @@ class MagentoWithMockedRun extends GenericInstaller
         $this->_throwException = $throw;
     }
 
-    protected function _installMagento($code, $type, array $options)
+    protected function installMagento($code, $type, array $options)
     {
         if ($this->_throwException) {
             throw new MyException('O_o');

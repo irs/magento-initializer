@@ -58,7 +58,7 @@ abstract class Fso
         );
 
         foreach ($iterator as $item) {
-            if ('.' != $item->getFilename() && '..' != $item->getFilename()) {
+            if ('.' == $item->getFilename() || '..' == $item->getFilename()) {
                 continue;
             }
             if ($item->isDir()) {

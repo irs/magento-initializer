@@ -9,6 +9,8 @@
 
 namespace Irs\MagentoInitializer;
 
+require_once __DIR__ . '/Helper.php';
+
 class FsoTest extends \PHPUnit_Framework_TestCase
 {
     private $_temp;

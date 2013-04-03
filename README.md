@@ -36,7 +36,7 @@ installs Magento into it.
 
 Is a class for changing Magento run parameters and state managenet. It can be used for:
 
-* setingt store and scope into index.php generated with `GenericInstaller;` 
+* setting store and scope into index.php generated with `GenericInstaller;` 
 * saving current Magento's state into state file;
 * restoring Magento state from state file.
 

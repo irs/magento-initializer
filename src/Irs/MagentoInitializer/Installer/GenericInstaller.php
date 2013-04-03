@@ -22,6 +22,17 @@ class GenericInstaller implements InstallerInterface
     private $configData;
     private $copier;
 
+    /**
+     * Constructs installer
+     *
+     * @param string $targetDir   Target directory path
+     * @param string $magentoDir  Path to magento
+     * @param string $dbHostName  Host name of test DB
+     * @param string $dbUserName  User name of test DB
+     * @param string $dbPassword  Pasword of test DB
+     * @param string $dbName      Schema name of test DB
+     * @throws \InvalidArgumentException On invalid arguments
+     */
     public function __construct($targetDir, $magentoDir, $dbHostName, $dbUserName, $dbPassword, $dbName)
     {
         $this->magentoDir = realpath($magentoDir);

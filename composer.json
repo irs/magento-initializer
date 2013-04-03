@@ -21,14 +21,7 @@
         
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
-    },
-
-    "repositories": [
-        {
-            "type":  "vcs",
-            "url":   "https://github.com/irs/fso.git"
-        }
-    ],
+    }
     
     "bin": ["bin/magento"],
     

@@ -1,6 +1,6 @@
 {
     "name":         "irs/magento-initializer",
-    "description":  "Framework for Magento initialization and state recovery",
+    "description":  "Framework for Magento initialization and state recovery.",
     "keywords":     ["magento", "state", "initialization"],
     "type":         "library",
     "license":      "MIT",

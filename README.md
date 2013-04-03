@@ -24,4 +24,9 @@ API description
 ---------------
 
 The framework defines four core interfaces: `InstallerInterface, InitializerInterface, 
-StateInterface` and  `DbInterface` and four implementations of these interfaces
+StateInterface, DbInterface` and four implementations of these interfaces. 
+
+### GenericInstaller
+
+Generic installer initializes Magento config, var, media structures in target directory; creates index.php 
+that runs Magento from source directory

@@ -22,6 +22,14 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
     private $_magento;
     private $_target;
 
+    public function providerVersions()
+    {
+        return array(
+            array('1.9'),
+            array('1.11'),
+        );
+    }
+
     protected function setUp()
     {
         $this->_temp = Helper::createTempDir();
@@ -66,11 +74,13 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
         $installer = new MagentoWithMockedRun($this->_target, $this->_temp . 'aaaa', 'asd', 'asdas', 'asdas', 'asqwed');
     }
 
-
-    public function testInstallMethodShouldCreateAppropriateFileStructure()
+    /**
+     * @dataProvider providerVersions
+     */
+    public function testInstallMethodShouldCreateAppropriateFileStructure($version)
     {
         // prepare
-        Helper::emulateMagentoFileStructure($this->_magento);
+        Helper::emulateMagentoFileStructure($this->_magento, $version);
         $installer = new MagentoWithMockedRun(
             $this->_target,
             $this->_magento,

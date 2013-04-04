@@ -155,13 +155,10 @@ class GenericInstaller implements InstallerInterface
             $index
         );
 
-        $nativeCode = <<<NATIVE
-\$mageRunCode = isset(\$_SERVER['MAGE_RUN_CODE']) ? \$_SERVER['MAGE_RUN_CODE'] : '';
-\$mageRunType = isset(\$_SERVER['MAGE_RUN_TYPE']) ? \$_SERVER['MAGE_RUN_TYPE'] : 'store';
-
-Mage::run(\$mageRunCode, \$mageRunType);
-NATIVE;
+        $pattern = '/umask\(0\);.*/s';
         $targetCode = <<<TARGET
+umask(0);
+
 \$paramsFilename = 'params.php';
 if (file_exists(\$paramsFilename)) {
     \$params = include \$paramsFilename;
@@ -170,7 +167,7 @@ if (file_exists(\$paramsFilename)) {
     die("Cannot run test instance without run params.");
 }
 TARGET;
-        $index = str_replace($nativeCode, $targetCode, $index);
+        $index = preg_replace($pattern, $targetCode, $index);
         file_put_contents($this->targetDir . DIRECTORY_SEPARATOR . 'index.php', $index);
     }
 

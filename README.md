@@ -32,6 +32,8 @@ Generic installer initializes Magento config, var, media structures in target di
 that runs Magento from source directory with created config, var, media; adds test database to configuration and
 installs Magento into it.
 
+> Credentias to admin panel will be `admin` : `123123qa`.
+
 ### GenericInitializer ###
 
 Is a class for changing Magento run parameters and state managenet. It can be used for:

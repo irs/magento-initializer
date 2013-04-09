@@ -75,7 +75,6 @@ STMT
     {
         self::assertFileExists($target . '/etc');
         self::assertFileExists($target . '/etc/config.xml');
-        self::assertFileExists($target . '/etc/local.xml');
         self::assertFileExists($target . '/etc/local.xml.additional');
         self::assertFileExists($target . '/etc/local.xml.template');
         self::assertFileExists($target . '/etc/enterprise.xml');

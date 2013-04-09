@@ -54,8 +54,26 @@ class GenericInitializerTest extends \PHPUnit_Framework_TestCase
 
     protected function _installMagento()
     {
-        $installer = new MagentoInstallerWithMockedRun($this->_target, $this->_magento, 'host', 'user', 'pwd', 'name');
+        $installer = new MagentoInstallerWithMockedRun(
+            $this->_target, $this->_magento, 'host', 'user', 'pwd', 'name', 'url');
         $installer->install();
+        file_put_contents(
+            $this->_target . '/etc/local.xml',
+            <<<LOCALXML
+<?xml version='1.0'?>
+<config>
+    <global>
+        <resources>
+            <default_setup>
+                <connection>
+                    <type>smth</type>
+                </connection>
+            </default_setup>
+        </resources>
+    </global>
+</config>
+LOCALXML
+);
     }
 
     public function testShouldImplementInitializerInterface()
@@ -113,7 +131,6 @@ class GenericInitializerTest extends \PHPUnit_Framework_TestCase
     public function testShouldSaveStateOfMagentoAndReturnIt()
     {
         // preapare
-
         $db = $this->getMock(
             'Irs\MagentoInitializer\Initializer\Db\Mysql',
             array('createDump'),

@@ -53,7 +53,8 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
             self::DB_HOSTNAME,
             self::DB_USERNAME,
             self::DB_PASSWORD,
-            self::DB_NAME
+            self::DB_NAME,
+            'url'
         );
         $this->assertInstanceOf('Irs\MagentoInitializer\Installer\InstallerInterface', $installer);
     }
@@ -63,7 +64,7 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorShouldThrowInvalidArgumentExceptionOnIncorrectMagentoDir()
     {
-        $installer = new MagentoWithMockedRun($this->_target, $this->_magento, 'asd', 'asdas', 'asdas', 'asqwed');
+        $installer = new MagentoWithMockedRun($this->_target, $this->_magento, 'asd', 'asdas', 'asdas', 'asqwed', 'url');
     }
 
     /**
@@ -71,7 +72,7 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstructorShouldThrowInvalidArgumentExceptionOnIncorrectMagentoPath()
     {
-        $installer = new MagentoWithMockedRun($this->_target, $this->_temp . 'aaaa', 'asd', 'asdas', 'asdas', 'asqwed');
+        $installer = new MagentoWithMockedRun($this->_target, $this->_temp . 'aaaa', 'asd', 'asdas', 'asdas', 'asqwed', 'url');
     }
 
     /**
@@ -87,7 +88,8 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
             self::DB_HOSTNAME,
             self::DB_USERNAME,
             self::DB_PASSWORD,
-            self::DB_NAME
+            self::DB_NAME,
+            'url'
         );
 
         // act
@@ -95,7 +97,6 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
 
         // assert
         Helper::assertFileStructureIsCorrect($this->_target);
-        $this->_assertLocalXmlIsCorrect();
         Helper::assertRunParametersIsCorrect($this->_target, $this->_magento);
         Helper::assertCorrectIndexPhpFile($this->_target . '/index.php', $this->_magento);
     }
@@ -110,7 +111,8 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
             self::DB_HOSTNAME,
             self::DB_USERNAME,
             self::DB_PASSWORD,
-            self::DB_NAME
+            self::DB_NAME,
+            'url'
         );
 
         // act & assert
@@ -127,7 +129,8 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
             self::DB_HOSTNAME,
             self::DB_USERNAME,
             self::DB_PASSWORD,
-            self::DB_NAME
+            self::DB_NAME,
+            'url'
         );
 
         // act
@@ -147,7 +150,8 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
             self::DB_HOSTNAME,
             self::DB_USERNAME,
             self::DB_PASSWORD,
-            self::DB_NAME
+            self::DB_NAME,
+            'url'
         );
         $installer->setThrowExceptionFromInstall(true);
 
@@ -163,44 +167,6 @@ class GenericInstallerTest extends \PHPUnit_Framework_TestCase
                 $this->fail('Target is not empty.');
             }
         }
-    }
-
-    protected function _assertLocalXmlIsCorrect()
-    {
-        $showErrors = libxml_use_internal_errors(false);
-        $local = simplexml_load_file($this->_target . '/etc/local.xml');
-        libxml_use_internal_errors($showErrors);
-        $this->assertNotEquals(false, $local, 'local.xml was copied from Magento instance.');
-
-        $this->assertTrue(isset($local->global->install->date));
-        $this->assertTrue(isset($local->global->crypt->key));
-        $this->assertTrue(isset($local->global->resources->db->table_prefix));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->host));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->username));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->password));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->dbname));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->initStatements));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->model));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->type));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->pdoType));
-        $this->assertTrue(isset($local->global->resources->default_setup->connection->active));
-        $this->assertTrue(isset($local->global->session_save));
-        $this->assertTrue(isset($local->admin->routers->adminhtml->args->frontName));
-
-        $this->assertEmpty((string)$local->global->resources->db->table_prefix);
-        $this->assertEmpty((string)$local->global->resources->default_setup->connection->pdoType);
-        $this->assertEquals('{{date}}',        (string)$local->global->install->date);
-        $this->assertEquals('{{key}}',         (string)$local->global->crypt->key);
-        $this->assertEquals(self::DB_HOSTNAME, (string)$local->global->resources->default_setup->connection->host);
-        $this->assertEquals(self::DB_USERNAME, (string)$local->global->resources->default_setup->connection->username);
-        $this->assertEquals(self::DB_PASSWORD, (string)$local->global->resources->default_setup->connection->password);
-        $this->assertEquals(self::DB_NAME,     (string)$local->global->resources->default_setup->connection->dbname);
-        $this->assertEquals('SET NAMES utf8',  (string)$local->global->resources->default_setup->connection->initStatements);
-        $this->assertEquals('mysql4',          (string)$local->global->resources->default_setup->connection->model);
-        $this->assertEquals('pdo_mysql',       (string)$local->global->resources->default_setup->connection->type);
-        $this->assertEquals(1,                 (string)$local->global->resources->default_setup->connection->active);
-        $this->assertEquals('files',           (string)$local->global->session_save);
-        $this->assertEquals('admin',           (string)$local->admin->routers->adminhtml->args->frontName);
     }
 }
 

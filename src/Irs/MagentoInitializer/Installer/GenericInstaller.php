@@ -31,9 +31,10 @@ class GenericInstaller implements InstallerInterface
      * @param string $dbUserName  User name of test DB
      * @param string $dbPassword  Pasword of test DB
      * @param string $dbName      Schema name of test DB
+     * @param string $url         URL that points to target dir
      * @throws \InvalidArgumentException On invalid arguments
      */
-    public function __construct($targetDir, $magentoDir, $dbHostName, $dbUserName, $dbPassword, $dbName)
+    public function __construct($targetDir, $magentoDir, $dbHostName, $dbUserName, $dbPassword, $dbName, $url)
     {
         $this->magentoDir = realpath($magentoDir);
         if (!$this->magentoDir) {
@@ -61,17 +62,32 @@ class GenericInstaller implements InstallerInterface
         }
 
         $this->configData = array(
-            'db_host'            => $dbHostName,
-            'db_user'            => $dbUserName,
-            'db_pass'            => $dbPassword,
-            'db_name'            => $dbName,
-            'db_prefix'          => '',
-            'db_pdo_type'        => '',
-            'db_init_statemants' => 'SET NAMES utf8',
-            'db_model'           => 'mysql4',
-            'db_type'            => 'pdo_mysql',
-            'session_save'       => 'files',
-            'admin_frontname'    => 'admin',
+            'db_host'             => $dbHostName,
+            'db_user'             => $dbUserName,
+            'db_pass'             => $dbPassword,
+            'db_name'             => $dbName,
+            'db_prefix'           => '',
+            'db_pdo_type'         => '',
+            'db_init_statemants'  => 'SET NAMES utf8',
+            'db_model'            => 'mysql4',
+            'db_type'             => 'pdo_mysql',
+            'session_save'        => 'files',
+            'admin_frontname'     => 'admin',
+            'license_agreement_accepted' => 'yes',
+            'locale'              => 'en_US',
+            'timezone'            => 'America/Los_Angeles',
+            'default_currency'    => 'USD',
+            'url'                 => $url,
+            'secure_base_url'     => $url,
+//             'skip_url_validation' => true,
+            'use_secure'          => false,
+            'use_secure_admin'    => false,
+            'use_rewrites'        => false,
+            'admin_lastname'      => 'Doe',
+            'admin_firstname'     => 'John',
+            'admin_email'         => 'john@example.com',
+            'admin_username'      => self::ADMIN_USER_NAME,
+            'admin_password'      => self::ADMIN_USER_PASSWORD,
         );
     }
 
@@ -82,7 +98,6 @@ class GenericInstaller implements InstallerInterface
         }
         try {
             $this->createDirectoryStructure();
-            $this->createLocalXml();
             $this->createIndexPhp();
             $params = $this->createRunParams();
             $this->installMagento($params['code'], $params['type'], $params['options']);
@@ -108,36 +123,18 @@ class GenericInstaller implements InstallerInterface
 
     protected function installMagento($code, $type, array $options)
     {
+
         include $this->magentoDir . '/app/Mage.php';
 
-        \Mage::app($code, $type, $options);
-        \Mage_Core_Model_Resource_Setup::applyAllUpdates();
-        \Mage_Core_Model_Resource_Setup::applyAllDataUpdates();
-
-        // Enable configuration cache by default in order to improve tests performance
-        \Mage::app()->getCacheInstance()->saveOptions(array('config' => 1));
-        $this->updateLocalXmlWithCurrentDate();
-        $this->createAdminUser(self::ADMIN_USER_NAME, self::ADMIN_USER_PASSWORD);
-    }
-
-    protected function createAdminUser($userName, $password)
-    {
-        $user = \Mage::getModel('admin/user')
-            ->setFirstname('John')
-            ->setLastname('Doe')
-            ->setEmail('fake@magento.com')
-            ->setUsername($userName)
-            ->setPassword($password)
-            ->setIsActive(true)
-            ->save();
-        $role = \Mage::getModel('admin/role')
-            ->setParentId(1)
-            ->setTreeLevel(2)
-            ->setSortOrder(0)
-            ->setRoleType('U')
-            ->setUserId($user->getId())
-            ->setRoleName('Role')
-            ->save();
+        $app = \Mage::app('default', 'store', $options);
+        $installer = \Mage::getSingleton('install/installer_console');
+        $installer->init($app);
+        $installer->setArgs($this->configData);
+        if (!$installer->install()) {
+            throw new \RuntimeException(
+                'Magento installation error occured: ' . implode('; ', $installer->getErrors())
+            );
+        }
     }
 
     protected function createIndexPhp()
@@ -228,30 +225,5 @@ TARGET;
             $this->targetDir . DIRECTORY_SEPARATOR . 'skin',
             false
         );
-    }
-
-    protected function createLocalXml()
-    {
-        $templatePathname = $this->magentoDir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPARATOR . 'local.xml.template';
-        $targetPathname = $this->targetDir . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPARATOR . 'local.xml';
-
-        $target = str_replace(
-            array_map(
-                function ($key) {return '{{' . $key . '}}';},
-                array_keys($this->configData)
-            ),
-            array_values($this->configData),
-            file_get_contents($templatePathname)
-        );
-
-        file_put_contents($targetPathname, $target);
-    }
-
-    protected function updateLocalXmlWithCurrentDate()
-    {
-        $localXmlFilename = $this->targetDir . DIRECTORY_SEPARATOR . 'etc' . DIRECTORY_SEPARATOR . 'local.xml';
-        $localXml = file_get_contents($localXmlFilename);
-        $localXml = str_replace('{{date}}', date('r'), $localXml);
-        file_put_contents($localXmlFilename, $localXml, LOCK_EX);
     }
 }

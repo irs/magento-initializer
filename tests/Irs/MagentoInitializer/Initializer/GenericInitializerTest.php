@@ -172,6 +172,7 @@ LOCALXML
         // preapare
         $dbDump = 'dump';
         $stateFileName = $this->_target('magento.state');
+        $self = $this;
 
         $db = $this->getMock(
             'Irs\MagentoInitializer\Initializer\Db\Mysql',
@@ -189,9 +190,9 @@ LOCALXML
         $db->expects($this->once())
             ->method('restoreDump')
             ->will($this->returnCallback(
-                function ($fileName) use ($dbDump) {
-                    $this->assertFileExists($fileName);
-                    $this->assertEquals($dbDump, file_get_contents($fileName));
+                function ($fileName) use ($dbDump, $self) {
+                    $self->assertFileExists($fileName);
+                    $self->assertEquals($dbDump, file_get_contents($fileName));
                 }
             ));
 

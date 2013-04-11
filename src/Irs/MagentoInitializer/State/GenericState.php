@@ -41,7 +41,7 @@ class GenericState implements StateInterface
     {
         $fileName = $this->archive->filename;
         if (true !== $this->archive->close()) {
-            throw new \RuntimeException("Unable to save state ({$this->archive->status}:{$this->archive->statusSys}).");
+            throw new \RuntimeException("Unable to save state.");
         }
 
         $result =  $this->archive->open($fileName, self::MODE_CREATE);

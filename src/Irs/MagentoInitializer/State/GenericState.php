@@ -148,6 +148,7 @@ class GenericState implements StateInterface
                 throw new \InvalidArgumentException("Unable to read '{$item->getPathname()}'.");
             }
             $localName = ltrim(substr($item->getPathname(), strlen($path)), '\\/');
+            $localName = str_replace(DIRECTORY_SEPARATOR, '/', $localName);
             if ($item->isFile()) {
                 $this->archive->addFile($item->getPathname(), $type . '/' . $localName);
             } else if ($item->isDir()) {

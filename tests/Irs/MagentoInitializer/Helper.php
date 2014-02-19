@@ -95,6 +95,7 @@ STMT
         self::assertFileExists($target . '/skin/skin.test');
         self::assertFileExists($target . '/var');
         self::assertFileExists($target . '/media');
+        self::assertFileExists($target . '/.htaccess');
         self::assertFileNotExists($target . '/var/var.test');
         self::assertFileNotExists($target . '/media/media.test');
     }
@@ -150,6 +151,7 @@ STMT
         file_put_contents($target. '/media/media.test', 'media.test');
         file_put_contents($target. '/js/js.test', 'js.test');
         file_put_contents($target. '/skin/skin.test', 'skin.test');
+        file_put_contents($target. '/.htaccess', 'htaccess');
         file_put_contents($target. '/index.php.sample', self::$indexPhpSample[$version]);
     }
 

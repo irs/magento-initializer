@@ -225,5 +225,10 @@ TARGET;
             $this->targetDir . DIRECTORY_SEPARATOR . 'skin',
             false
         );
+        Fso::copy(
+            $this->magentoDir . DIRECTORY_SEPARATOR . '.htaccess',
+            $this->targetDir . DIRECTORY_SEPARATOR . '.htaccess',
+            false
+        );
     }
 }

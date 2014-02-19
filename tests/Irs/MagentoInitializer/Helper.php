@@ -11,10 +11,18 @@ namespace Irs\MagentoInitializer;
 
 abstract class Helper extends \PHPUnit_Framework_Assert
 {
+    const MAX_TEMP_DIR_ATTEMPTS = 100;
+
     public static function createTempDir()
     {
-        $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::_getRandomName();
-        mkdir($path);
+        $i = self::MAX_TEMP_DIR_ATTEMPTS;
+        do {
+            $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . self::_getRandomName();
+        } while (file_exists($path) && $i--);
+
+        if (@!mkdir($path)) {
+            throw new \DomainException("Unable to create temporary directory $path");
+        }
 
         return $path;
     }
